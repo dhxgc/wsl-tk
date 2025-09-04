@@ -4,7 +4,7 @@ import system.settings
 def guiMain():
     root = tk.Tk()
     root.title("GUI WSL")
-    root.geometry(system.settings.interfaceResolution)
+    # root.geometry(system.settings.interfaceResolution)
     root.tk.call('tk', 'scaling', system.settings.interfaceScale)
     root.eval('tk::PlaceWindow . center')
 
@@ -12,6 +12,6 @@ def guiMain():
     sidebarCreate(root=root)
 
     root.grid_columnconfigure(0, weight=1)
-    root.grid_columnconfigure(1, weight=4)
+    root.grid_columnconfigure(1, weight=2)
 
     root.mainloop()

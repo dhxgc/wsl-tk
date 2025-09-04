@@ -34,32 +34,52 @@ def sidebarDelete (root):
 def sidebarCreate(root):
     root.sidebarFrame = tk.Frame(root, borderwidth=5, relief="ridge")
     varListMachine = listMachine()
-    root.sidebarFrame.pack()
+    root.sidebarFrame.grid(
+        row=0,
+        column=0,
+        sticky="we"
+    )
     
     for row, distroName in zip(range(0, len(varListMachine)), varListMachine):
         tk.Button(
             root.sidebarFrame,
             text=f"{distroName}",
-            width=15,
-            height=1,
             command=lambda name=distroName: machineInfo(root, name)
-        ).pack()
+        ).pack(fill="x")
 
 
 def machineInfo (root, machineName: str):
     if hasattr(root, "frameMachineInfo"):
         root.frameMachineInfo.destroy()
     
-    root.frameMachineInfo = ttk.Frame(root, borderwidth=5, relief="ridge")
-    root.frameMachineInfo.pack()
-    
-    labelPathInfo = ttk.Label (
-        root.frameMachineInfo,
-        text=f"Machine location:\n{getMachinePath(machineName)}",
-        font='Helvetica 8 bold',
-        
+    root.frameMachineInfo = ttk.Frame(root, borderwidth=5, relief="ridge", width=1000)
+    root.frameMachineInfo.grid_propagate(False)
+    root.frameMachineInfo.grid(
+        row=0,
+        column=1,
+        sticky="ns",
     )
-    labelPathInfo.pack()
+    
+    labelPathInfo1 = ttk.Label (
+        root.frameMachineInfo,
+        text=f"Machine location:",
+        font='Helvetica 8 bold',
+    )
+    labelPathInfo2 = ttk.Label (
+        root.frameMachineInfo,
+        text=f"{getMachinePath(machineName)}",
+        font='Helvetica 8',
+    )
+    labelPathInfo1.grid(
+        row=0,
+        column=0,
+        sticky="nw"
+    )
+    labelPathInfo2.grid(
+        row=1,
+        column=0,
+        sticky="nw"
+    )
 
 # Кнопки для топбара
 def guiAddMachine(rootWindow):
