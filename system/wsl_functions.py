@@ -1,6 +1,13 @@
 # Functions for WSL operations
 import subprocess
 
+def getMachineInfo (machineName):
+    
+    return 1
+
+def getMachineApps (machineName):
+    return 1
+
 def getMachinePath (distrName):
     result = subprocess.run(
         ["powershell.exe", 

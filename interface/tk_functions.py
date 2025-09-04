@@ -7,7 +7,6 @@ import tkinter as tk
 from tkinter import ttk
 from tkinter import messagebox
 
-
 # Interfaces functions
 def topbarCreate(root):
     topbar = tk.Menu()
@@ -33,15 +32,34 @@ def sidebarDelete (root):
         root.sidebarFrame.destroy()
 
 def sidebarCreate(root):
-    root.sidebarFrame = tk.Frame(root)
-    root.sidebarFrame.grid(row=0, column=0, rowspan=len(listMachine()))
-    for row, distroName in zip(range(0, len(listMachine())), listMachine()):
+    root.sidebarFrame = tk.Frame(root, borderwidth=5, relief="ridge")
+    varListMachine = listMachine()
+    root.sidebarFrame.pack()
+    
+    for row, distroName in zip(range(0, len(varListMachine)), varListMachine):
         tk.Button(
             root.sidebarFrame,
             text=f"{distroName}",
-            width=14,
-            height=1
-        ).grid(row=row, column=0, padx=5, pady=5)
+            width=15,
+            height=1,
+            command=lambda name=distroName: machineInfo(root, name)
+        ).pack()
+
+
+def machineInfo (root, machineName: str):
+    if hasattr(root, "frameMachineInfo"):
+        root.frameMachineInfo.destroy()
+    
+    root.frameMachineInfo = ttk.Frame(root, borderwidth=5, relief="ridge")
+    root.frameMachineInfo.pack()
+    
+    labelPathInfo = ttk.Label (
+        root.frameMachineInfo,
+        text=f"Machine location:\n{getMachinePath(machineName)}",
+        font='Helvetica 8 bold',
+        
+    )
+    labelPathInfo.pack()
 
 # Кнопки для топбара
 def guiAddMachine(rootWindow):
@@ -49,7 +67,6 @@ def guiAddMachine(rootWindow):
     subRoot.title("Добавить машину")
     subRoot.grab_set()
     subRoot.focus_force()
-    subRoot.resizable(False, False)
 
 # Имя новой машины
     labelNameOfNewDistro = ttk.Label(

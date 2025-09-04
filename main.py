@@ -1,4 +1,4 @@
-from interface.interface import cliMain, guiMain
+from interface.interface import guiMain
 
 if __name__=="__main__":
     guiMain()
