@@ -7,7 +7,8 @@ if os.name == "nt":
 def guiMain():
     root = tk.Tk()
     root.title("GUI WSL")
-    
+
+# Параметры запуска главного окна
     if os.name == "nt":
         windll.shcore.SetProcessDpiAwareness(1)
         root.tk.call('tk', 'scaling', system.settings.interfaceScale * 1.3)

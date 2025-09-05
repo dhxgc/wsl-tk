@@ -6,12 +6,12 @@ import os
 
 def checkConfig():
     defaultConfig = f'''[General]
-defaultPath     = "C:/Users/{os.getlogin()}/WSL/"
+defaultPath     = C:/Users/{os.getlogin()}/WSL/
 interfaceScale  = 2
 
 '''
     if os.name == "nt":
-        if os.path.exists("C:/Users/" + os.getlogin() + "/.config/wsl-tk/config.ini"):
+        if os.path.exists(f"C:/Users/{os.getlogin()}/.config/wsl-tk/config.ini"):
             return 1
         else:
             subprocess.run(["powershell.exe", "-Command", "mkdir", "-p", f"C:/Users/{os.getlogin()}/.config/wsl-tk"], text=True, capture_output=True)
@@ -19,12 +19,10 @@ interfaceScale  = 2
                 config.write(defaultConfig)
                 return 0
 
-        
-
 def nixToWinPath(path: str) -> str:
     match = re.match(r"^/mnt/([a-zA-Z])/(.*)", path)
     if not match:
-        return path  # если путь не в ожидаемом формате — вернуть как есть
+        return path
     drive, rest = match.groups()
     return f"{drive.upper()}:/{rest}"
 
@@ -46,5 +44,3 @@ def selectFile():
 def copyToClipboard (e, root, text):
     root.clipboard_clear()
     root.clipboard_append(text)
-
-print(checkConfig())
