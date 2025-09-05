@@ -22,3 +22,7 @@ def selectFile():
         return nixToWinPath(filename)
     else:
         return filename
+    
+def copyToClipboard (e, root, text):
+    root.clipboard_clear()
+    root.clipboard_append(text)

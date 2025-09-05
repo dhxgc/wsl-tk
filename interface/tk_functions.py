@@ -40,46 +40,42 @@ def sidebarCreate(root):
         sticky="we"
     )
     
-    for row, distroName in zip(range(0, len(varListMachine)), varListMachine):
+    for distroName in varListMachine:
         tk.Button(
             root.sidebarFrame,
             text=f"{distroName}",
             command=lambda name=distroName: machineInfo(root, name)
         ).pack(fill="x")
 
-
 def machineInfo (root, machineName: str):
     if hasattr(root, "frameMachineInfo"):
         root.frameMachineInfo.destroy()
     
-    root.frameMachineInfo = ttk.Frame(root, borderwidth=5, relief="ridge", width=1000)
-    root.frameMachineInfo.grid_propagate(False)
+    root.frameMachineInfo = ttk.Frame(root, borderwidth=5, relief="ridge")
     root.frameMachineInfo.grid(
         row=0,
         column=1,
         sticky="ns",
     )
     
+    labelName = ttk.Label (
+        root.frameMachineInfo,
+        text=f"{machineName}",
+        font='Helvetica 14 bold',
+        width=40,
+        anchor="center",
+        relief="raised"
+    )
+    text = "Machine location (Click to copy)"
     labelPathInfo1 = ttk.Label (
         root.frameMachineInfo,
-        text=f"Machine location:",
+        text=text,
         font='Helvetica 8 bold',
+        cursor="hand2"
     )
-    labelPathInfo2 = ttk.Label (
-        root.frameMachineInfo,
-        text=f"{getMachinePath(machineName)}",
-        font='Helvetica 8',
-    )
-    labelPathInfo1.grid(
-        row=0,
-        column=0,
-        sticky="nw"
-    )
-    labelPathInfo2.grid(
-        row=1,
-        column=0,
-        sticky="nw"
-    )
+    labelName.grid(row=0, column=0, sticky="w", padx=10, pady=10)
+    labelPathInfo1.grid(row=1, column=0, sticky="nw", padx=10)
+    labelPathInfo1.bind("<Button-1>", lambda e: copyToClipboard(e, root, getMachinePath(machineName)))
 
 # Кнопки для топбара
 def guiAddMachine(rootWindow):
