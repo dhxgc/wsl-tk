@@ -1,11 +1,20 @@
 from interface.tk_functions import *
 import system.settings
 
+if os.name == "nt":
+    from ctypes import windll
+
 def guiMain():
     root = tk.Tk()
     root.title("GUI WSL")
+    
+    if os.name == "nt":
+        windll.shcore.SetProcessDpiAwareness(1)
+        root.tk.call('tk', 'scaling', system.settings.interfaceScale * 1.3)
+    elif os.name == "posix":
+        root.tk.call('tk', 'scaling', system.settings.interfaceScale * 1.3)
+    
     # root.geometry(system.settings.interfaceResolution)
-    root.tk.call('tk', 'scaling', system.settings.interfaceScale)
     root.eval('tk::PlaceWindow . center')
 
     topbarCreate(root=root)

@@ -1,6 +1,7 @@
-# Storage
-defaultPath = "C:/Users/admin/WSL/"
+import configparser
 
-# Interface
-interfaceScale      = 2.4
+
+
+defaultPath = 
+interfaceScale      = 2
 # interfaceResolution = "1000x600"
