@@ -25,11 +25,7 @@ def guiMain():
     topbarCreate(root=root)
     sidebarCreate(root=root)
 
-    root.frameMachineInfo = ttk.Frame(root, borderwidth=5, relief="ridge")
-    root.frameMachineInfo.grid_propagate(False)
-    root.frameMachineInfo.grid(row=0, column=1, sticky="ns")
-
-    root.grid_columnconfigure(0, weight=1)
-    root.grid_columnconfigure(1, weight=3)
+    root.grid_columnconfigure(0, weight=1, minsize=300)
+    root.grid_columnconfigure(1, weight=3, minsize=1000)
 
     root.mainloop()

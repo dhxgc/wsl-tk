@@ -1,5 +1,6 @@
 from system.wsl_functions import *
 from system.helper_functions import *
+from system.app_functions import getAppList
 
 from system.settings import defaultPath
 
@@ -44,25 +45,29 @@ def sidebarCreate(root):
         tk.Button(
             root.sidebarFrame,
             text=f"{distroName}",
-            command=lambda name=distroName: machineInfo(root, name)
+            command=lambda name=distroName: machineInfo(root, name),
+            font="Courier 12"
         ).pack(fill="x")
 
 def machineInfo (root, machineName: str):
+
     if hasattr(root, "frameMachineInfo"):
         root.frameMachineInfo.destroy()
-    
+
+# Правый фрейм
     root.frameMachineInfo = ttk.Frame(root, borderwidth=5, relief="ridge")
     root.frameMachineInfo.grid(
         row=0,
         column=1,
-        sticky="ns",
+        sticky="nswe",
     )
+    root.frameMachineInfo.grid_columnconfigure(0, weight=1)
     
+# Заголовок, путь машины
     labelName = ttk.Label (
         root.frameMachineInfo,
         text=f"{machineName}",
-        font='Helvetica 14 bold',
-        width=40,
+        font='Courier 14 bold',
         anchor="center",
         relief="raised"
     )
@@ -70,12 +75,57 @@ def machineInfo (root, machineName: str):
     labelPathInfo1 = ttk.Label (
         root.frameMachineInfo,
         text=text,
-        font='Helvetica 8 bold',
-        cursor="hand2"
+        font='Courier 10',
+        cursor="hand2",
     )
-    labelName.grid(row=0, column=0, sticky="w", padx=10, pady=10)
+    labelName.grid(row=0, column=0, sticky="we", padx=10, pady=10)
     labelPathInfo1.grid(row=1, column=0, sticky="nw", padx=10)
     labelPathInfo1.bind("<Button-1>", lambda e: copyToClipboard(e, root, getMachinePath(machineName)))
+
+# Подфрейм с приложениями
+    frameApp = ttk.Frame(root.frameMachineInfo, borderwidth=5, relief="raised")
+    frameApp.grid_columnconfigure(1, weight=1)
+    frameApp.grid(
+        row=2,
+        column=0,
+        sticky="we",
+        padx=10,
+        pady=10
+    )
+    appsLabel = ttk.Label (
+        frameApp,
+        text=f"Список приложений",
+        font='Courier 10',
+    )
+    appsAdd = tk.Button(
+        frameApp,
+        text="Добавить",
+        font="Courier 10",
+        command=lambda: print("ADD")
+    )
+    appsDel = tk.Button(
+        frameApp,
+        text="Удалить",
+        font="Courier 10",
+        command=lambda: print("DEL"),
+        
+    )
+    appsLabel.grid(row=0, column=0)
+    appsAdd.grid(row=0, column=2, padx=5, pady=5, sticky="w")
+    appsDel.grid(row=0, column=3, padx=5, pady=5, sticky="w")
+
+    # row = 1
+    # apps_list = getAppList(machineName)
+    # for apps, col in zip(apps_list, range(apps_list)):
+    #     label = ttk.Label(
+    #         frameApp,
+    #         text=apps,
+    #         font="Courier 8",
+    #         cursor="hand2",
+    #     ).grid(row=row, column=col, padx=15, pady=5)
+    #     row+=1
+    #     label.bind("<Button-1>", lambda e: copyToClipboard(e, root, getMachinePath(machineName)))
+
 
 # Кнопки для топбара
 def guiAddMachine(rootWindow):
