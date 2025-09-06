@@ -26,6 +26,6 @@ def guiMain():
     sidebarCreate(root=root)
 
     root.grid_columnconfigure(0, weight=1, minsize=300)
-    root.grid_columnconfigure(1, weight=3, minsize=1000)
+    root.grid_columnconfigure(1, weight=3, minsize=800)
 
     root.mainloop()
