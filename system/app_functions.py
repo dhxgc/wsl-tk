@@ -2,7 +2,8 @@ import subprocess
 import configparser
 import os
 
-from settings import config
+config = configparser.ConfigParser()
+config.read(f"C:/Users/{os.getlogin()}/.config/wsl-tk/config.ini")
 
 def getAppList (machineName: str):
     return config.options(f"{machineName}.App")
@@ -29,4 +30,3 @@ def addAppToList(machineName: str, appName: str, command: str):
         config.write(configfile)
     return result
 
-print(addAppToList("machine1", "app1", "command_text"))

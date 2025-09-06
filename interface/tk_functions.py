@@ -1,8 +1,7 @@
 from system.wsl_functions import *
 from system.helper_functions import *
 
-
-import system.settings
+from system.settings import defaultPath
 
 import tkinter as tk
 from tkinter import ttk
@@ -103,7 +102,7 @@ def guiAddMachine(rootWindow):
         subRoot,
         text="Введите путь для хранения диска:"
     )
-    strPathOfNewDistro = tk.StringVar(value=system.settings.defaultPath)
+    strPathOfNewDistro = tk.StringVar(value=defaultPath)
     entryPathOfNewDistro = ttk.Entry(
         subRoot,
         textvariable=strPathOfNewDistro
@@ -113,7 +112,7 @@ def guiAddMachine(rootWindow):
 
 # Синхронизация имени и нового пути
     def update(*args):
-        strPathOfNewDistro.set(value=system.settings.defaultPath+strNameOfNewDistro.get())
+        strPathOfNewDistro.set(value=defaultPath+strNameOfNewDistro.get())
     strNameOfNewDistro.trace_add("write", update)
 
 # Кнопки для выбора типа оригинального темплейта
@@ -218,7 +217,7 @@ def guiCopyMachine(root):
     def updateEntry(*args):
     # После начала изменения поля имени получаем его содержимое и вставляем в переменную для поля пути
         temp = subRoot.nameOfNewDistro.get()
-        subRoot.pathOfNewDistro.set(value=system.settings.defaultPath+temp)
+        subRoot.pathOfNewDistro.set(value=defaultPath+temp)
     # Отслеживание изменений в поле имени машины
     # При измененении вызывается updateEntry()
     subRoot.nameOfNewDistro.trace_add("write", updateEntry)
@@ -227,7 +226,7 @@ def guiCopyMachine(root):
         subRoot,
         text="Введите путь для хранения новой машины:"
     )
-    subRoot.pathOfNewDistro = tk.StringVar(subRoot, value=system.settings.defaultPath)
+    subRoot.pathOfNewDistro = tk.StringVar(subRoot, value=defaultPath)
     subRoot.entryPathOfNewDistro = ttk.Entry(
         subRoot,
         textvariable=subRoot.pathOfNewDistro
