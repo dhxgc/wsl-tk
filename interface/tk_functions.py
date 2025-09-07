@@ -1,8 +1,8 @@
 from system.wsl_functions import *
 from system.helper_functions import *
-from system.app_functions import addAppToList, delAppFromList, getAppList
+from system.app_functions import addAppToList, delAppFromList, getAppList, removeAllApps, runApp
 
-from system.settings import defaultPath, interfaceScale
+from system.settings import defaultPath, interfaceScale, config
 
 import tkinter as tk
 from tkinter import ttk
@@ -77,95 +77,6 @@ def sidebarCreate():
         ).pack(fill="x")
 
 # Логика правого фрейма - информация, приложения
-def guiAddApp (machineName: str):
-    subRoot = tk.Toplevel(root)
-    subRoot.title("Добавить приложение")
-    subRoot.grab_set()
-    subRoot.focus_force()
-    subRoot.grid_columnconfigure(0, weight=1)
-
-    labelName = ttk.Label(
-        subRoot,
-        text="Введите имя приложения:"
-    )
-    strName = tk.StringVar()
-    entryName = ttk.Entry(
-        subRoot,
-        textvariable=strName
-    )
-    labelCommand = ttk.Label(
-        subRoot,
-        text="Введите команду для запуска приложения:"
-    )
-    strCommand = tk.StringVar()
-    entryCommand = ttk.Entry(
-        subRoot,
-        textvariable=strCommand
-    )
-
-    labelName.grid(row=0, column=0, padx=5, pady=5, sticky="nw")
-    entryName.grid(row=1, column=0, padx=5, pady=5, sticky="we")
-    labelCommand.grid(row=2, column=0, padx=5, pady=5, sticky="nw")
-    entryCommand.grid(row=3, column=0, padx=5, pady=5, sticky="we")
-    
-    def onOk ():
-        if addAppToList(machineName, strName.get(), strCommand.get()):
-            removeAppFrame()
-            createAppFrame(machineName)
-            subRoot.destroy()
-        else:
-            messagebox.showerror("Ошибка", f"Во время добавления приложения произошла ошибка")
-            subRoot.destroy()
-
-    button_frame = ttk.Frame(subRoot)
-    button_frame.grid(row=4, column=0, sticky="n", padx=5, pady=10)
-    
-    okButton = ttk.Button(button_frame, text="OK", command=onOk)
-    okButton.pack(side=tk.LEFT, padx=5)
-    cancelButton = ttk.Button(button_frame, text="Отмена", command=subRoot.destroy)
-    cancelButton.pack(side=tk.LEFT, padx=5)
-
-    return 1
-
-def guiDelApp (machineName: str):
-    subRoot = tk.Toplevel(root)
-    subRoot.title("Удалить приложение")
-    subRoot.grab_set()
-    subRoot.focus_force()
-
-    labelName = ttk.Label(
-        subRoot,
-        text="Выберите приложение для удаления:"
-    )
-    cmbChoiceApp = tk.StringVar(value=getAppList(machineName)[0])
-    cmbListApp = ttk.Combobox(
-        subRoot,
-        values=getAppList(machineName),
-        textvariable=cmbChoiceApp,
-        state="readonly"
-    )
-    labelName.grid(row=0, column=0, padx=10, pady=5, sticky="new")
-    cmbListApp.grid(row=1, column=0, padx=10, pady=10, sticky="new")
-
-    def onOk ():
-        if delAppFromList(machineName, cmbChoiceApp.get()):
-            removeAppFrame()
-            createAppFrame(machineName)
-            subRoot.destroy()
-        else:
-            messagebox.showerror("Ошибка", f"Во время удаления приложения произошла ошибка")
-            subRoot.destroy()
-
-    button_frame = ttk.Frame(subRoot)
-    button_frame.grid(row=2, column=0, sticky="n", padx=5, pady=10)
-    
-    okButton = ttk.Button(button_frame, text="OK", command=onOk)
-    okButton.pack(side=tk.LEFT, padx=5)
-    cancelButton = ttk.Button(button_frame, text="Отмена", command=subRoot.destroy)
-    cancelButton.pack(side=tk.LEFT, padx=5)
-
-    return 1
-
 def machineInfo (machineName: str):
     if hasattr(root, "frameMachineInfo"):
         root.frameMachineInfo.destroy()
@@ -256,9 +167,98 @@ def createAppFrame (machineName):
                 root.frameApp,
                 text="Запустить",
                 font="Courier 10",
-                command=lambda: print("RUN")
+                command=lambda app=apps: runApp(config.get(f"{machineName}.App", app))
             )
             button.grid(row=row, column=3, padx=5, pady=5, sticky="we")
+
+    return 1
+
+def guiAddApp (machineName: str):
+    subRoot = tk.Toplevel(root)
+    subRoot.title("Добавить приложение")
+    subRoot.grab_set()
+    subRoot.focus_force()
+    subRoot.grid_columnconfigure(0, weight=1)
+
+    labelName = ttk.Label(
+        subRoot,
+        text="Введите имя приложения:"
+    )
+    strName = tk.StringVar()
+    entryName = ttk.Entry(
+        subRoot,
+        textvariable=strName
+    )
+    labelCommand = ttk.Label(
+        subRoot,
+        text="Введите команду для запуска приложения:"
+    )
+    strCommand = tk.StringVar()
+    entryCommand = ttk.Entry(
+        subRoot,
+        textvariable=strCommand
+    )
+
+    labelName.grid(row=0, column=0, padx=5, pady=5, sticky="nw")
+    entryName.grid(row=1, column=0, padx=5, pady=5, sticky="we")
+    labelCommand.grid(row=2, column=0, padx=5, pady=5, sticky="nw")
+    entryCommand.grid(row=3, column=0, padx=5, pady=5, sticky="we")
+    
+    def onOk ():
+        if addAppToList(machineName, strName.get(), strCommand.get()):
+            removeAppFrame()
+            createAppFrame(machineName)
+            subRoot.destroy()
+        else:
+            messagebox.showerror("Ошибка", f"Во время добавления приложения произошла ошибка")
+            subRoot.destroy()
+
+    button_frame = ttk.Frame(subRoot)
+    button_frame.grid(row=4, column=0, sticky="n", padx=5, pady=10)
+    
+    okButton = ttk.Button(button_frame, text="OK", command=onOk)
+    okButton.pack(side=tk.LEFT, padx=5)
+    cancelButton = ttk.Button(button_frame, text="Отмена", command=subRoot.destroy)
+    cancelButton.pack(side=tk.LEFT, padx=5)
+
+    return 1
+
+def guiDelApp (machineName: str):
+    subRoot = tk.Toplevel(root)
+    subRoot.title("Удалить приложение")
+    subRoot.grab_set()
+    subRoot.focus_force()
+
+    labelName = ttk.Label(
+        subRoot,
+        text="Выберите приложение для удаления:"
+    )
+    cmbChoiceApp = tk.StringVar(value=getAppList(machineName)[0])
+    cmbListApp = ttk.Combobox(
+        subRoot,
+        values=getAppList(machineName),
+        textvariable=cmbChoiceApp,
+        state="readonly"
+    )
+    labelName.grid(row=0, column=0, padx=10, pady=5, sticky="new")
+    cmbListApp.grid(row=1, column=0, padx=10, pady=10, sticky="new")
+
+    def onOk ():
+        if delAppFromList(machineName, cmbChoiceApp.get()):
+            removeAppFrame()
+            createAppFrame(machineName)
+            subRoot.destroy()
+        else:
+            messagebox.showerror("Ошибка", f"Во время удаления приложения произошла ошибка")
+            subRoot.destroy()
+
+    button_frame = ttk.Frame(subRoot)
+    button_frame.grid(row=2, column=0, sticky="n", padx=5, pady=10)
+    
+    okButton = ttk.Button(button_frame, text="OK", command=onOk)
+    okButton.pack(side=tk.LEFT, padx=5)
+    cancelButton = ttk.Button(button_frame, text="Отмена", command=subRoot.destroy)
+    cancelButton.pack(side=tk.LEFT, padx=5)
 
     return 1
 
@@ -466,6 +466,8 @@ def guiUnregisterMachine():
             # Обновление списка ВМ главного окна
                 sidebarDelete()
                 sidebarCreate()
+                removeAppFrame()
+                removeAllApps(selectedMachine)
                 messagebox.showinfo("Успешно", f"Дистрибутив {selectedMachine} удален.")
                 subRoot.destroy()
             else:

@@ -34,3 +34,16 @@ def addAppToList(machineName: str, appName: str, command: str):
         config.write(configfile)
     return 1
 
+def removeAllApps (machineName: str):
+    section = f"{machineName}.App"
+    if not config.has_section(section):
+        return 1
+    else:
+        config.remove_section(section)
+        with open(f"C:/Users/{os.getlogin()}/.config/wsl-tk/config.ini", "w") as configfile:
+            config.write(configfile)
+    return 1
+
+def runApp(command: str):
+    run = subprocess.Popen(command, shell=True, stdin=None, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    return 1
