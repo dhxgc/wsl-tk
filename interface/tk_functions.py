@@ -1,6 +1,6 @@
 from system.wsl_functions import *
 from system.helper_functions import *
-from system.app_functions import addAppToList, delAppFromList, getAppList, removeAllApps, runApp
+from system.app_functions import addAppToList, delAppFromList, getAppList, removeAllApps, runApp, changeApp, getAppCommand
 
 from system.settings import defaultPath, interfaceScale, config
 
@@ -145,8 +145,8 @@ def createAppFrame (machineName):
         command=lambda: guiDelApp(machineName)
     )
     appsLabel.grid(row=0, column=0)
-    appsAdd.grid(row=0, column=2, padx=5, pady=5, sticky="we")
-    appsDel.grid(row=0, column=3, padx=5, pady=5, sticky="we")
+    appsAdd.grid(row=0, column=2, padx=5, pady=15, sticky="we")
+    appsDel.grid(row=0, column=3, padx=5, pady=15, sticky="we")
 
     apps_list = getAppList(machineName)
     if apps_list == None:
@@ -161,15 +161,59 @@ def createAppFrame (machineName):
                 cursor="hand2",
             )
             label.grid(row=row, column=0, padx=15, pady=5, sticky="w")
-            label.bind("<Button-1>", lambda e: copyToClipboard(e, root, getMachinePath(machineName)))
-
-            button = tk.Button(
+            
+            button1 = tk.Button(
+                root.frameApp,
+                text="Изменить",
+                font="Courier 10",
+                command=lambda app=apps: guiChangeApp(machineName, app)
+            )
+            button1.grid(row=row, column=2, padx=5, pady=5, sticky="we")
+            button2 = tk.Button(
                 root.frameApp,
                 text="Запустить",
                 font="Courier 10",
-                command=lambda app=apps: runApp(config.get(f"{machineName}.App", app))
+                command=lambda app=apps: runApp(getAppCommand(machineName, app))
             )
-            button.grid(row=row, column=3, padx=5, pady=5, sticky="we")
+            button2.grid(row=row, column=3, padx=5, pady=5, sticky="we")
+
+    return 1
+
+def guiChangeApp (machineName: str, appName: str):
+    subRoot = tk.Toplevel(root)
+    subRoot.title(f"Изменить приложение {appName}")
+    subRoot.grab_set()
+    subRoot.focus_force()
+    subRoot.grid_columnconfigure(0, weight=1)
+    
+    labelCommand = ttk.Label(
+        subRoot,
+        text="Введите команду для запуска приложения:"
+    )
+    strCommand = tk.StringVar(value=getAppCommand(machineName, appName))
+    entryCommand = ttk.Entry(
+        subRoot,
+        textvariable=strCommand
+    )
+    labelCommand.grid(row=0, column=0, padx=5, pady=5, sticky="nw")
+    entryCommand.grid(row=1, column=0, padx=5, pady=5, sticky="we")
+
+    print(getAppCommand(machineName, appName))
+
+    def onOk ():
+        if changeApp(machineName, appName, strCommand.get()):
+            subRoot.destroy()
+        else:
+            messagebox.showerror("Ошибка", f"Во время добавления приложения произошла ошибка")
+            subRoot.destroy()
+
+    button_frame = ttk.Frame(subRoot)
+    button_frame.grid(row=4, column=0, sticky="n", padx=5, pady=10)
+    
+    okButton = ttk.Button(button_frame, text="OK", command=onOk)
+    okButton.pack(side=tk.LEFT, padx=5)
+    cancelButton = ttk.Button(button_frame, text="Отмена", command=subRoot.destroy)
+    cancelButton.pack(side=tk.LEFT, padx=5)
 
     return 1
 

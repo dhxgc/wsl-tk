@@ -47,3 +47,12 @@ def removeAllApps (machineName: str):
 def runApp(command: str):
     run = subprocess.Popen(command, shell=True, stdin=None, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     return 1
+
+def changeApp (machineName: str, appName: str, command: str):
+    section = f"{machineName}.App"
+    config.set(section, appName, command)
+    
+    with open(f"C:/Users/{os.getlogin()}/.config/wsl-tk/config.ini", "w") as configfile:
+        config.write(configfile)
+
+    return 1
