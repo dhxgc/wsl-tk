@@ -2,37 +2,64 @@ from system.wsl_functions import *
 from system.helper_functions import *
 from system.app_functions import addAppToList, delAppFromList, getAppList
 
-from system.settings import defaultPath
+from system.settings import defaultPath, interfaceScale
 
 import tkinter as tk
 from tkinter import ttk
 from tkinter import messagebox
 
+# main 
+if os.name == "nt":
+    from ctypes import windll
+
+def guiMain():
+    global root
+    root = tk.Tk()
+    root.title("GUI WSL")
+
+# Параметры запуска главного окна
+    if os.name == "nt":
+        windll.shcore.SetProcessDpiAwareness(1)
+        root.tk.call('tk', 'scaling', interfaceScale * 1.3)
+    elif os.name == "posix":
+        root.tk.call('tk', 'scaling', interfaceScale * 1.3)
+    
+    # root.geometry(system.settings.interfaceResolution)
+    root.eval('tk::PlaceWindow . center')
+
+    topbarCreate()
+    sidebarCreate()
+
+    root.grid_columnconfigure(0, weight=1, minsize=300)
+    root.grid_columnconfigure(1, weight=3, minsize=800)
+
+    root.mainloop()
+
 # Логика создания/обновления топбара, левого фрейма
-def topbarCreate(root):
+def topbarCreate():
     topbar = tk.Menu()
     root.config(menu=topbar)
 
     topbarActions = tk.Menu(topbar, tearoff=False)
     topbarActions.add_command(
         label="Добавить",
-        command=lambda: guiAddMachine(rootWindow=root)
+        command=lambda: guiAddMachine()
     )
     topbarActions.add_command(
         label="Склонировать",
-        command=lambda: guiCopyMachine(root=root)
+        command=lambda: guiCopyMachine()
     )
     topbarActions.add_command(
         label="Удалить",
-        command=lambda: guiUnregisterMachine(root=root)
+        command=lambda: guiUnregisterMachine()
     )
     topbar.add_cascade(menu=topbarActions, label="Actions")
 
-def sidebarDelete (root):
+def sidebarDelete ():
     if hasattr(root, 'sidebarFrame'):
         root.sidebarFrame.destroy()
 
-def sidebarCreate(root):
+def sidebarCreate():
     root.sidebarFrame = tk.Frame(root, borderwidth=5, relief="ridge")
     varListMachine = listMachine()
     root.sidebarFrame.grid(
@@ -45,12 +72,12 @@ def sidebarCreate(root):
         tk.Button(
             root.sidebarFrame,
             text=f"{distroName}",
-            command=lambda name=distroName: machineInfo(root, name),
+            command=lambda name=distroName: machineInfo(name),
             font="Courier 12"
         ).pack(fill="x")
 
 # Логика правого фрейма - информация, приложения
-def guiAddApp (root, machineName: str):
+def guiAddApp (machineName: str):
     subRoot = tk.Toplevel(root)
     subRoot.title("Добавить приложение")
     subRoot.grab_set()
@@ -83,8 +110,8 @@ def guiAddApp (root, machineName: str):
     
     def onOk ():
         if addAppToList(machineName, strName.get(), strCommand.get()):
-            removeAppFrame(root)
-            createAppFrame(root, machineName)
+            removeAppFrame()
+            createAppFrame(machineName)
             subRoot.destroy()
         else:
             messagebox.showerror("Ошибка", f"Во время добавления приложения произошла ошибка")
@@ -100,7 +127,7 @@ def guiAddApp (root, machineName: str):
 
     return 1
 
-def guiDelApp (root, machineName: str):
+def guiDelApp (machineName: str):
     subRoot = tk.Toplevel(root)
     subRoot.title("Удалить приложение")
     subRoot.grab_set()
@@ -122,8 +149,8 @@ def guiDelApp (root, machineName: str):
 
     def onOk ():
         if delAppFromList(machineName, cmbChoiceApp.get()):
-            removeAppFrame(root)
-            createAppFrame(root, machineName)
+            removeAppFrame()
+            createAppFrame(machineName)
             subRoot.destroy()
         else:
             messagebox.showerror("Ошибка", f"Во время удаления приложения произошла ошибка")
@@ -139,7 +166,7 @@ def guiDelApp (root, machineName: str):
 
     return 1
 
-def machineInfo (root, machineName: str):
+def machineInfo (machineName: str):
     if hasattr(root, "frameMachineInfo"):
         root.frameMachineInfo.destroy()
 
@@ -172,14 +199,14 @@ def machineInfo (root, machineName: str):
     labelPathInfo1.bind("<Button-1>", lambda e: copyToClipboard(e, root, getMachinePath(machineName)))
 
 # Подфрейм с приложениями
-    createAppFrame(root, machineName)
+    createAppFrame(machineName)
 
-def removeAppFrame(root):
+def removeAppFrame():
     if hasattr(root, 'frameApp'):
         root.frameApp.destroy()
     return 1
 
-def createAppFrame (root, machineName):
+def createAppFrame (machineName):
     root.frameApp = ttk.Frame(root.frameMachineInfo, borderwidth=5, relief="raised")
     root.frameApp.grid_columnconfigure(1, weight=1)
     root.frameApp.grid(
@@ -198,13 +225,13 @@ def createAppFrame (root, machineName):
         root.frameApp,
         text="Добавить",
         font="Courier 10",
-        command=lambda: guiAddApp(root, machineName)
+        command=lambda: guiAddApp(machineName)
     )
     appsDel = tk.Button(
         root.frameApp,
         text="Удалить",
         font="Courier 10",
-        command=lambda: guiDelApp(root, machineName)
+        command=lambda: guiDelApp(machineName)
     )
     appsLabel.grid(row=0, column=0)
     appsAdd.grid(row=0, column=2, padx=5, pady=5, sticky="we")
@@ -236,8 +263,8 @@ def createAppFrame (root, machineName):
     return 1
 
 # Кнопки для топбара
-def guiAddMachine(rootWindow):
-    subRoot = tk.Toplevel(rootWindow)
+def guiAddMachine():
+    subRoot = tk.Toplevel(root)
     subRoot.title("Добавить машину")
     subRoot.grab_set()
     subRoot.focus_force()
@@ -321,8 +348,8 @@ def guiAddMachine(rootWindow):
     def onOk ():
         if addMachineFromFile(strNameOfNewDistro.get(), strPathOfNewDistro.get(), strTemplateOfNewDistro.get(), vhdSign.get()):
         # Обновление списка ВМ главного окна
-            sidebarDelete(root=rootWindow)
-            sidebarCreate(root=rootWindow)
+            sidebarDelete()
+            sidebarCreate()
             messagebox.showinfo("Успешно", f"Дистрибутив {strNameOfNewDistro.get()} добавлен.")
             subRoot.destroy()
         else:
@@ -337,7 +364,7 @@ def guiAddMachine(rootWindow):
     cancelButton = ttk.Button(button_frame, text="Отмена", command=subRoot.destroy)
     cancelButton.pack(side=tk.LEFT, padx=5)
     
-def guiCopyMachine(root):
+def guiCopyMachine():
     subRoot = tk.Toplevel(root)
     subRoot.title("Скопировать машину")
     subRoot.grab_set()
@@ -400,8 +427,8 @@ def guiCopyMachine(root):
             subRoot.pathOfNewDistro.get()
         ):
         # Обновление списка ВМ главного окна
-            sidebarDelete(root=root)
-            sidebarCreate(root=root)
+            sidebarDelete()
+            sidebarCreate()
             messagebox.showinfo("Успешно", f"Дистрибутив {subRoot.nameOfNewDistro.get()} добавлен.")
             subRoot.destroy()
         else:
@@ -416,7 +443,7 @@ def guiCopyMachine(root):
     cancelButton = ttk.Button(button_frame, text="Отмена", command=subRoot.destroy)
     cancelButton.pack(side=tk.LEFT, padx=5)
 
-def guiUnregisterMachine(root):
+def guiUnregisterMachine():
     subRoot = tk.Toplevel(root)
     subRoot.title("Delete machine")
     subRoot.grab_set()
@@ -437,8 +464,8 @@ def guiUnregisterMachine(root):
             selectedMachine = listboxMachines.get(selection[0])
             if unregisterMachine(selectedMachine):
             # Обновление списка ВМ главного окна
-                sidebarDelete(root=root)
-                sidebarCreate(root=root)
+                sidebarDelete()
+                sidebarCreate()
                 messagebox.showinfo("Успешно", f"Дистрибутив {selectedMachine} удален.")
                 subRoot.destroy()
             else:
