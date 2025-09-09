@@ -32,6 +32,7 @@ def guiMain():
 
     root.grid_columnconfigure(0, weight=1, minsize=300)
     root.grid_columnconfigure(1, weight=3, minsize=800)
+    root.grid_rowconfigure(0, weight=1)
 
     root.mainloop()
 
@@ -65,16 +66,17 @@ def sidebarCreate():
     root.sidebarFrame.grid(
         row=0,
         column=0,
-        sticky="we"
+        sticky="nswe"
     )
+    root.sidebarFrame.grid_columnconfigure(0, weight=1)
     
-    for distroName in varListMachine:
+    for row, distroName in zip(range(len(varListMachine)), varListMachine):
         tk.Button(
             root.sidebarFrame,
             text=f"{distroName}",
             command=lambda name=distroName: machineInfo(name),
             font="Courier 12"
-        ).pack(fill="x")
+        ).grid(row=row, column=0, padx=5, pady=5, sticky="nwe")
 
 # Логика правого фрейма - информация, приложения
 def machineInfo (machineName: str):

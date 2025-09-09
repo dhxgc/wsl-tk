@@ -1,6 +1,13 @@
 # Functions for WSL operations
 import subprocess
 
+def getRunningMachines ():
+    result = subprocess.run(["wsl", "--list", "--running"], capture_output=True, encoding="utf-16le")
+    list = result.stdout.split("\n")
+    list.pop(0); list.pop()
+    print(list)
+    return 1
+
 def getMachinePath (distrName):
     result = subprocess.run(
         ["powershell.exe", 
