@@ -40,6 +40,7 @@ def topbarCreate():
     topbar = tk.Menu()
     root.config(menu=topbar)
 
+# Actions
     topbarActions = tk.Menu(topbar, tearoff=False)
     topbarActions.add_command(
         label="Добавить",
@@ -54,6 +55,15 @@ def topbarCreate():
         command=lambda: guiUnregisterMachine()
     )
     topbar.add_cascade(menu=topbarActions, label="Actions")
+
+# Settings and other
+    topbarSettings = tk.Menu(root, tearoff=False)
+    topbarSettings.add_command(
+        label="Открыть файл конфигурации",
+        command=lambda: runApp(f'notepad.exe C:/Users/{os.getlogin()}/.config/wsl-tk/config.ini')
+    )
+    topbar.add_cascade(menu=topbarSettings, label="Settings")
+
 
 def sidebarDelete ():
     if hasattr(root, 'sidebarFrame'):
