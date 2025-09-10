@@ -45,7 +45,10 @@ def removeAllApps (machineName: str):
     return 1
 
 def runApp(command: str):
-    run = subprocess.Popen(command, shell=True, stdin=None, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    DETACHED_PROCESS = 0x00000008
+    CREATE_NO_WINDOW = 0x08000000
+    process = subprocess.Popen(command, shell=True, stdin=None, stdout=subprocess.PIPE, stderr=subprocess.PIPE, creationflags=CREATE_NO_WINDOW)
+
     return 1
 
 def changeApp (machineName: str, appName: str, command: str):

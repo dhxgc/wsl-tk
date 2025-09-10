@@ -7,6 +7,7 @@ from system.settings import defaultPath, interfaceScale, config
 import tkinter as tk
 from tkinter import ttk
 from tkinter import messagebox
+from ttkthemes import ThemedTk
 
 # main 
 if os.name == "nt":
@@ -14,7 +15,7 @@ if os.name == "nt":
 
 def guiMain():
     global root
-    root = tk.Tk()
+    root = ThemedTk(theme='ubuntu')
     root.title("GUI WSL")
 
 # Параметры запуска главного окна
@@ -24,7 +25,10 @@ def guiMain():
     elif os.name == "posix":
         root.tk.call('tk', 'scaling', interfaceScale * 1.3)
     
+    # root.geometry(system.settings.interfaceResolution)
     root.eval('tk::PlaceWindow . center')
+
+    style = ttk.Style()
 
     topbarCreate()
     sidebarCreate()
