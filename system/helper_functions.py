@@ -1,7 +1,5 @@
 from tkinter import filedialog as fd
-import subprocess
 import re
-import os
 
 from system.settings import defaultPath
 
