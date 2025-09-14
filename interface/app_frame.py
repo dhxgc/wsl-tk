@@ -21,6 +21,7 @@ def machineInfo (machineName: str):
     root.frameMachineInfo.grid_columnconfigure(0, weight=1)
     
 # Заголовок, путь машины
+    mgmtFrame = ttk.Frame(root.frameMachineInfo)
     labelName = ttk.Label (
         root.frameMachineInfo,
         text=f"{machineName}",
@@ -28,16 +29,16 @@ def machineInfo (machineName: str):
         anchor="center",
         relief="raised"
     )
-    text = "Machine location (Click to copy)"
-    labelPathInfo1 = ttk.Label (
-        root.frameMachineInfo,
+    text = "Machine location"
+    buttonPathInfo1 = tk.Button (
+        mgmtFrame,
         text=text,
         font='Courier 10',
-        cursor="hand2",
+        command=lambda: runApp(f'explorer.exe {getMachinePath(machineName)}')
     )
+    mgmtFrame.grid(row=1, column=0, sticky="nwe")
     labelName.grid(row=0, column=0, sticky="we", padx=10, pady=10)
-    labelPathInfo1.grid(row=1, column=0, sticky="nw", padx=10)
-    labelPathInfo1.bind("<Button-1>", lambda e: copyToClipboard(e, root, getMachinePath(machineName)))
+    buttonPathInfo1.grid(row=1, column=0, sticky="nw", padx=10)
 
 # Подфрейм с приложениями
     createAppFrame(machineName)

@@ -3,8 +3,6 @@ from interface.app_frame        import machineInfo
 from system.wsl_functions       import listMachine
 
 import tkinter as tk
-from tkinter import ttk
-from tkinter import messagebox
 
 def sidebarDelete ():
     if hasattr(root, 'sidebarFrame'):
