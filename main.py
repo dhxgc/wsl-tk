@@ -3,8 +3,6 @@ from interface.sidebar  import sidebarCreate
 from interface.topbar   import topbarCreate
 from interface.root     import root
 
-from tkinter            import ttk
-from tkinter            import messagebox
 import tkinter          as tk
 
 import os
