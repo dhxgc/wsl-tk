@@ -51,12 +51,16 @@ def removeAllApps (machineName: str):
             config.write(configfile)
     return 1
 
-def runApp(command: str):
-    DETACHED_PROCESS = 0x00000008
-    CREATE_NO_WINDOW = 0x08000000
-    process = subprocess.Popen(command, shell=True, stdin=None, stdout=subprocess.PIPE, stderr=subprocess.PIPE, creationflags=CREATE_NO_WINDOW)
-
-    return 1
+def runApp(command: str, run_type="no_window"):
+    types = {
+        "detached": 0x00000008, 
+        "no_window": 0x08000000
+    }
+    if run_type in types.keys():
+        process = subprocess.Popen(command, shell=True, stdin=None, stdout=subprocess.PIPE, stderr=subprocess.PIPE, creationflags=types[run_type])
+        return True
+    else:
+        return False
 
 def changeApp (machineName: str, appName: str, command: str):
     config = initConfig()

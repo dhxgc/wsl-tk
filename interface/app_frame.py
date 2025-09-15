@@ -115,9 +115,10 @@ def createAppFrame (machineName):
             button2 = tk.Button(
                 root.frameApp,
                 text="Запустить",
-                font="Courier 10",
-                command=lambda app=apps: runApp(getAppCommand(machineName, app))
+                font="Courier 10"
             )
+            button2.bind('<Control-ButtonPress-1>', lambda e, app=apps: runApp(getAppCommand(machineName, app), run_type="detached"))
+            button2.bind('<ButtonPress-1>', lambda e, app=apps: runApp(getAppCommand(machineName, app)))
             button2.grid(row=row, column=3, padx=5, pady=5, sticky="we")
 
     return 1
