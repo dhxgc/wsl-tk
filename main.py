@@ -1,9 +1,12 @@
-from system.settings    import interfaceScale
-from interface.sidebar  import sidebarCreate
-from interface.topbar   import topbarCreate
-from interface.root     import root
+from system.settings        import interfaceScale
+from system.wsl_functions   import listMachine
 
-import tkinter          as tk
+from interface.sidebar      import sidebarCreate, renewSidebar
+from interface.app_frame    import machineInfo
+from interface.topbar       import topbarCreate
+from interface.root         import root
+
+import tkinter as tk
 
 import os
 if os.name == "nt":
@@ -11,6 +14,7 @@ if os.name == "nt":
 
 def guiMain():
     root.title("GUI WSL")
+    root.bind("<KeyPress-F5>", lambda e: (renewSidebar(), machineInfo(root.selectedMachine)))
 
 # Параметры запуска главного окна
     if os.name == "nt":

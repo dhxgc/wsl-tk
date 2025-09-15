@@ -6,6 +6,8 @@ import tkinter as tk
 from tkinter import ttk
 from tkinter import messagebox
 
+
+
 def machineInfo (machineName: str):
     if hasattr(root, "frameMachineInfo"):
         root.frameMachineInfo.destroy()
@@ -18,6 +20,9 @@ def machineInfo (machineName: str):
         sticky="nswe",
     )
     root.frameMachineInfo.grid_columnconfigure(0, weight=1)
+    
+# Атрибут, хранящий имя машины для которой открыт machineInfo
+    root.selectedMachine = machineName
     
 # Заголовок, путь машины
     labelName = ttk.Label (
@@ -100,22 +105,14 @@ def createAppFrame (machineName):
             label = ttk.Label(
                 root.frameApp,
                 text=apps,
-                font="Courier 10",
-                cursor="hand2",
+                font="Courier 10"
             )
             label.grid(row=row, column=0, padx=15, pady=5, sticky="w")
             
-            button1 = tk.Button(
-                root.frameApp,
-                text="Изменить",
-                font="Courier 10",
-                command=lambda app=apps: guiChangeApp(machineName, app)
-            )
-            button1.grid(row=row, column=2, padx=5, pady=5, sticky="we")
             button2 = tk.Button(
                 root.frameApp,
                 text="Запустить",
-                font="Courier 10"
+                font="Courier 10",
             )
             button2.bind('<Control-ButtonPress-1>', lambda e, app=apps: runApp(getAppCommand(machineName, app), run_type="detached"))
             button2.bind('<ButtonPress-1>', lambda e, app=apps: runApp(getAppCommand(machineName, app)))
@@ -249,4 +246,3 @@ def guiDelApp (machineName: str):
     cancelButton.pack(side=tk.LEFT, padx=5)
 
     return 1
-

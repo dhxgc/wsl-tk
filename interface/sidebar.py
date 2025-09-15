@@ -4,6 +4,10 @@ from system.wsl_functions       import listMachine
 
 import tkinter as tk
 
+def renewSidebar():
+    sidebarDelete()
+    sidebarCreate()
+
 def sidebarDelete ():
     if hasattr(root, 'sidebarFrame'):
         root.sidebarFrame.destroy()
