@@ -1,7 +1,6 @@
 from interface.root             import root
 from system.app_functions       import *
-from system.helper_functions    import copyToClipboard
-from system.wsl_functions       import getMachinePath
+from system.wsl_functions       import getMachinePath, disableMachine, getRunningMachines
 
 import tkinter as tk
 from tkinter import ttk
@@ -21,7 +20,6 @@ def machineInfo (machineName: str):
     root.frameMachineInfo.grid_columnconfigure(0, weight=1)
     
 # Заголовок, путь машины
-    mgmtFrame = ttk.Frame(root.frameMachineInfo)
     labelName = ttk.Label (
         root.frameMachineInfo,
         text=f"{machineName}",
@@ -29,16 +27,30 @@ def machineInfo (machineName: str):
         anchor="center",
         relief="raised"
     )
-    text = "Machine location"
+    labelName.grid(row=0, column=0, sticky="we", padx=10, pady=5)
+    
+    mgmtFrame = ttk.Frame(root.frameMachineInfo)
+    labelStatus = ttk.Label(
+        mgmtFrame,
+        text="Запущена" if machineName in getRunningMachines() else "Выключена",
+        font='Courier 8',
+    )
     buttonPathInfo1 = tk.Button (
         mgmtFrame,
-        text=text,
+        text="Machine location",
         font='Courier 10',
         command=lambda: runApp(f'explorer.exe {getMachinePath(machineName)}')
     )
+    buttonDisableMachine = tk.Button(
+        mgmtFrame,
+        text="Shutdown",
+        font='Courier 10',
+        command=lambda: disableMachine(machineName)
+    )
     mgmtFrame.grid(row=1, column=0, sticky="nwe")
-    labelName.grid(row=0, column=0, sticky="we", padx=10, pady=10)
+    labelStatus.grid(row=0, column=0, sticky="nw", padx=10, pady=15)
     buttonPathInfo1.grid(row=1, column=0, sticky="nw", padx=10)
+    buttonDisableMachine.grid(row=1, column=1, sticky="nw", padx=10)
 
 # Подфрейм с приложениями
     createAppFrame(machineName)

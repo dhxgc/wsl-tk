@@ -1,12 +1,19 @@
 # Functions for WSL operations
 import subprocess
 
+
+def disableMachine (distrName: str):
+    if distrName in getRunningMachines():
+        result = subprocess.Popen(["wsl.exe", "-t", distrName], stdin=None, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        return result
+    else:
+        return 1
+
 def getRunningMachines ():
     result = subprocess.run(["wsl", "--list", "--running"], capture_output=True, encoding="utf-16le")
     list = result.stdout.split("\n")
     list.pop(0); list.pop()
-    print(list)
-    return 1
+    return list
 
 def getMachinePath (distrName):
     result = subprocess.run(
