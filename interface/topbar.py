@@ -1,55 +1,53 @@
-from system.wsl_functions import *
-from system.helper_functions import *
+from interface.root             import root
+from interface.sidebar          import sidebarCreate, sidebarDelete
+from interface.app_frame        import removeAppFrame
 
-import system.settings
+from system.wsl_functions       import listMachine, addMachineFromFile, unregisterMachine, copyMachine
+from system.app_functions       import removeAllApps, runApp
+from system.settings            import defaultPath
+from system.helper_functions    import selectFile
+
 
 import tkinter as tk
+import os
 from tkinter import ttk
 from tkinter import messagebox
 
 
-# Interfaces functions
-def topbarCreate(root):
+def topbarCreate():
     topbar = tk.Menu()
     root.config(menu=topbar)
 
+# Actions
     topbarActions = tk.Menu(topbar, tearoff=False)
     topbarActions.add_command(
         label="Добавить",
-        command=lambda: guiAddMachine(rootWindow=root)
+        command=lambda: guiAddMachine()
     )
     topbarActions.add_command(
         label="Склонировать",
-        command=lambda: guiCopyMachine(root=root)
+        command=lambda: guiCopyMachine()
     )
     topbarActions.add_command(
         label="Удалить",
-        command=lambda: guiUnregisterMachine(root=root)
+        command=lambda: guiUnregisterMachine()
     )
     topbar.add_cascade(menu=topbarActions, label="Actions")
 
-def sidebarDelete (root):
-    if hasattr(root, 'sidebarFrame'):
-        root.sidebarFrame.destroy()
-
-def sidebarCreate(root):
-    root.sidebarFrame = tk.Frame(root)
-    root.sidebarFrame.grid(row=0, column=0, rowspan=len(listMachine()))
-    for row, distroName in zip(range(0, len(listMachine())), listMachine()):
-        tk.Button(
-            root.sidebarFrame,
-            text=f"{distroName}",
-            width=14,
-            height=1
-        ).grid(row=row, column=0, padx=5, pady=5)
+# Settings and other
+    topbarSettings = tk.Menu(root, tearoff=False)
+    topbarSettings.add_command(
+        label="Открыть файл конфигурации",
+        command=lambda: runApp(f'notepad.exe C:/Users/{os.getlogin()}/.config/wsl-tk/config.ini')
+    )
+    topbar.add_cascade(menu=topbarSettings, label="Settings")
 
 # Кнопки для топбара
-def guiAddMachine(rootWindow):
-    subRoot = tk.Toplevel(rootWindow)
+def guiAddMachine():
+    subRoot = tk.Toplevel(root)
     subRoot.title("Добавить машину")
     subRoot.grab_set()
     subRoot.focus_force()
-    subRoot.resizable(False, False)
 
 # Имя новой машины
     labelNameOfNewDistro = ttk.Label(
@@ -69,7 +67,7 @@ def guiAddMachine(rootWindow):
         subRoot,
         text="Введите путь для хранения диска:"
     )
-    strPathOfNewDistro = tk.StringVar(value=system.settings.defaultPath)
+    strPathOfNewDistro = tk.StringVar(value=defaultPath)
     entryPathOfNewDistro = ttk.Entry(
         subRoot,
         textvariable=strPathOfNewDistro
@@ -79,7 +77,7 @@ def guiAddMachine(rootWindow):
 
 # Синхронизация имени и нового пути
     def update(*args):
-        strPathOfNewDistro.set(value=system.settings.defaultPath+strNameOfNewDistro.get())
+        strPathOfNewDistro.set(value=defaultPath+strNameOfNewDistro.get())
     strNameOfNewDistro.trace_add("write", update)
 
 # Кнопки для выбора типа оригинального темплейта
@@ -130,8 +128,8 @@ def guiAddMachine(rootWindow):
     def onOk ():
         if addMachineFromFile(strNameOfNewDistro.get(), strPathOfNewDistro.get(), strTemplateOfNewDistro.get(), vhdSign.get()):
         # Обновление списка ВМ главного окна
-            sidebarDelete(root=rootWindow)
-            sidebarCreate(root=rootWindow)
+            sidebarDelete()
+            sidebarCreate()
             messagebox.showinfo("Успешно", f"Дистрибутив {strNameOfNewDistro.get()} добавлен.")
             subRoot.destroy()
         else:
@@ -146,7 +144,7 @@ def guiAddMachine(rootWindow):
     cancelButton = ttk.Button(button_frame, text="Отмена", command=subRoot.destroy)
     cancelButton.pack(side=tk.LEFT, padx=5)
     
-def guiCopyMachine(root):
+def guiCopyMachine():
     subRoot = tk.Toplevel(root)
     subRoot.title("Скопировать машину")
     subRoot.grab_set()
@@ -184,7 +182,7 @@ def guiCopyMachine(root):
     def updateEntry(*args):
     # После начала изменения поля имени получаем его содержимое и вставляем в переменную для поля пути
         temp = subRoot.nameOfNewDistro.get()
-        subRoot.pathOfNewDistro.set(value=system.settings.defaultPath+temp)
+        subRoot.pathOfNewDistro.set(value=defaultPath+temp)
     # Отслеживание изменений в поле имени машины
     # При измененении вызывается updateEntry()
     subRoot.nameOfNewDistro.trace_add("write", updateEntry)
@@ -193,7 +191,7 @@ def guiCopyMachine(root):
         subRoot,
         text="Введите путь для хранения новой машины:"
     )
-    subRoot.pathOfNewDistro = tk.StringVar(subRoot, value=system.settings.defaultPath)
+    subRoot.pathOfNewDistro = tk.StringVar(subRoot, value=defaultPath)
     subRoot.entryPathOfNewDistro = ttk.Entry(
         subRoot,
         textvariable=subRoot.pathOfNewDistro
@@ -209,8 +207,8 @@ def guiCopyMachine(root):
             subRoot.pathOfNewDistro.get()
         ):
         # Обновление списка ВМ главного окна
-            sidebarDelete(root=root)
-            sidebarCreate(root=root)
+            sidebarDelete()
+            sidebarCreate()
             messagebox.showinfo("Успешно", f"Дистрибутив {subRoot.nameOfNewDistro.get()} добавлен.")
             subRoot.destroy()
         else:
@@ -225,7 +223,7 @@ def guiCopyMachine(root):
     cancelButton = ttk.Button(button_frame, text="Отмена", command=subRoot.destroy)
     cancelButton.pack(side=tk.LEFT, padx=5)
 
-def guiUnregisterMachine(root):
+def guiUnregisterMachine():
     subRoot = tk.Toplevel(root)
     subRoot.title("Delete machine")
     subRoot.grab_set()
@@ -246,8 +244,10 @@ def guiUnregisterMachine(root):
             selectedMachine = listboxMachines.get(selection[0])
             if unregisterMachine(selectedMachine):
             # Обновление списка ВМ главного окна
-                sidebarDelete(root=root)
-                sidebarCreate(root=root)
+                sidebarDelete()
+                sidebarCreate()
+                removeAppFrame()
+                removeAllApps(selectedMachine)
                 messagebox.showinfo("Успешно", f"Дистрибутив {selectedMachine} удален.")
                 subRoot.destroy()
             else:

@@ -1,2 +1,8 @@
 __pycache__/
 widgets.py
+
+# venv
+bin
+include
+lib*
+pyvenv.cfg
