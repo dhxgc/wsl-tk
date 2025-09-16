@@ -8,3 +8,15 @@ Simple GUI for basic operations with distro's
 
  - Выключить машину
  - Отображение включенных машин
+
+
+##  Сборка
+```powershell
+# Нужен pyinstaller: pip install pyinstaller
+pyinstaller -w --onefile .\main.py
+```
+
+## Зависимости
+```text
+tkinter
+```
