@@ -2,7 +2,7 @@ from interface.root             import root
 from interface.sidebar          import sidebarCreate, sidebarDelete
 from interface.app_frame        import removeAppFrame
 
-from system.wsl_functions       import listMachine, addMachineFromFile, unregisterMachine, copyMachine
+from system.wsl_functions       import listMachine, addMachineFromFile, unregisterMachine, copyMachine, disableWSL
 from system.app_functions       import removeAllApps, runApp
 from system.settings            import defaultPath
 from system.helper_functions    import selectFile
@@ -39,6 +39,10 @@ def topbarCreate():
     topbarSettings.add_command(
         label="Открыть файл конфигурации",
         command=lambda: runApp(f'notepad.exe C:/Users/{os.getlogin()}/.config/wsl-tk/config.ini')
+    )
+    topbarSettings.add_command(
+        label="Выключить WSL",
+        command=lambda: disableWSL()
     )
     topbar.add_cascade(menu=topbarSettings, label="Settings")
 
@@ -126,11 +130,12 @@ def guiAddMachine():
 
 # Фрейм ОК и Отмена
     def onOk ():
-        if addMachineFromFile(strNameOfNewDistro.get(), strPathOfNewDistro.get(), strTemplateOfNewDistro.get(), vhdSign.get()):
+        result = addMachineFromFile(strNameOfNewDistro.get(), strPathOfNewDistro.get(), strTemplateOfNewDistro.get(), vhdSign.get())
+        if result:
         # Обновление списка ВМ главного окна
             sidebarDelete()
             sidebarCreate()
-            messagebox.showinfo("Успешно", f"Дистрибутив {strNameOfNewDistro.get()} добавлен.")
+            messagebox.showinfo("Информация", f"stdout:\n{result.stdout}stderr:{result.stderr}")
             subRoot.destroy()
         else:
             messagebox.showerror("Ошибка", f"Во время добавления дистрибутива {strNameOfNewDistro.get()} произошла ошибка")
@@ -201,15 +206,12 @@ def guiCopyMachine():
 
 # Фрейм с кнопками ОК и Отмена
     def onOk():
-        if copyMachine(
-            subRoot.nameOfNewDistro.get(),
-            subRoot.cmbChoiceMachine.get(),
-            subRoot.pathOfNewDistro.get()
-        ):
+        result = copyMachine(subRoot.nameOfNewDistro.get(), subRoot.cmbChoiceMachine.get(), subRoot.pathOfNewDistro.get())
+        if result:
         # Обновление списка ВМ главного окна
             sidebarDelete()
             sidebarCreate()
-            messagebox.showinfo("Успешно", f"Дистрибутив {subRoot.nameOfNewDistro.get()} добавлен.")
+            messagebox.showinfo("Информация", f"stdout:\n{result.stdout}stderr:{result.stderr}")
             subRoot.destroy()
         else:
             messagebox.showerror("Ошибка", f"Во время копирования дистрибутива {subRoot.nameOfNewDistro.get()} произошла ошибка")
@@ -242,13 +244,14 @@ def guiUnregisterMachine():
         selection = listboxMachines.curselection()
         if selection:
             selectedMachine = listboxMachines.get(selection[0])
-            if unregisterMachine(selectedMachine):
+            result = unregisterMachine(selectedMachine)
+            if result:
             # Обновление списка ВМ главного окна
                 sidebarDelete()
                 sidebarCreate()
                 removeAppFrame()
                 removeAllApps(selectedMachine)
-                messagebox.showinfo("Успешно", f"Дистрибутив {selectedMachine} удален.")
+                messagebox.showinfo("Информация", f"stdout:\n{result.stdout}stderr:{result.stderr}")
                 subRoot.destroy()
             else:
                 messagebox.showerror("Ошибка", f"Во время удаления дистрибутива {selectedMachine} произошла ошибка")

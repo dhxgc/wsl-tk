@@ -1,6 +1,9 @@
 # Functions for WSL operations
 import subprocess
 
+def disableWSL():
+    result = subprocess.run(["wsl", "--shutdown"], capture_output=True, encoding="utf-16le", creationflags=subprocess.CREATE_NO_WINDOW)
+    return result
 
 def disableMachine (distrName: str):
     if distrName in getRunningMachines():
@@ -60,19 +63,18 @@ def addMachineFromFile(distrName: str, destinationPath: str, originalPath: str, 
                                 text=True,
                                 encoding='utf-16le',
                                 creationflags=subprocess.CREATE_NO_WINDOW)
-    print(result.stdout)
-    return 1
+    return result
     
 def unregisterMachine (distrName: str):
-    subprocess.run(["wsl.exe", "--unregister", distrName], 
+    result = subprocess.run(["wsl.exe", "--unregister", distrName], 
                         capture_output=True, 
                         text=True,
                         encoding='utf-16le',
                         creationflags=subprocess.CREATE_NO_WINDOW)
-    return 1
+    return result
 
 def copyMachine (newDistroName: str, templateDistrName: str, pathOfNewDistro: str):
-    subprocess.run(
+    result = subprocess.run(
         ["wsl.exe",
          "--import",
          f"{newDistroName}",
@@ -84,4 +86,4 @@ def copyMachine (newDistroName: str, templateDistrName: str, pathOfNewDistro: st
         encoding="utf-16le",
         creationflags=subprocess.CREATE_NO_WINDOW
     )
-    return 1
+    return result
